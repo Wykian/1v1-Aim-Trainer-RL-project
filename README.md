@@ -16,7 +16,7 @@ This project replaces scripted bots with an RL agent trained through self-play �
 - `results/` — Exported ONNX model checkpoints
 - `requirements.txt` - List of ML Agent dependencies.
 - `Scripts/DodgeBallGameController.cs` — Modified game controller (4v4 → 1v1)
-- `Scripts/DodgeBallAgent.cs` — Original agent script (no changes needed)
+- `Scripts/DodgeBallAgent.cs` — Modified
 - `Scripts/DifficultyMenu.cs` — UI script for difficulty selection
 - `Brain/` — Exported ONNX model checkpoints at different training stages
 - `train.py` — Script to start training
