@@ -52,12 +52,6 @@ py -3.10 -m pip install torch torchvision torchaudio
 py -3.10 -m pip install mlagents==1.1.0
    ```
 
-Or run setup.py:
-
-```bash
-py -3.10 setup.py
-   ```
-
 Step 3 — Verify installation
 
 ```bash
@@ -75,7 +69,7 @@ Open scene: Assets/Dodgeball/Scenes/Elimination_Training
 Step 2 — Start training
 
 ```bash
-py -3.10 -c "from mlagents.trainers.learn import main; main()" "D:\config\dodgeball_1v1.yaml" --run-id dodgeball_1v1_v1
+py -3.10 -c "from mlagents.trainers.learn import main; main()" "\config\dodgeball_1v1.yaml" --run-id dodgeball_1v1_v1
    ```
 
 Step 3 — Press Play in Unity
