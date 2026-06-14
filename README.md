@@ -7,3 +7,11 @@ Conventional aim trainers (Aim Lab, KovaaK's) use scripted bots that move in pre
 This project replaces scripted bots with an RL agent trained through self-play — an opponent that develops genuine strategies by competing against itself. The result is an adaptive training partner whose difficulty scales naturally with training time.
 
 
+## Files and Folders
+
+- `config/[files_name].yaml` — POCA training configuration
+- `results/` — Exported ONNX model checkpoints
+- `requirements.txt` - List of Python dependencies.
+
+## Setup
+
