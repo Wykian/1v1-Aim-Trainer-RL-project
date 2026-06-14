@@ -19,9 +19,6 @@ This project replaces scripted bots with an RL agent trained through self-play �
 - `Scripts/DodgeBallAgent.cs` — Modified
 - `Scripts/DifficultyMenu.cs` — UI script for difficulty selection
 - `Brain/` — Exported ONNX model checkpoints at different training stages
-- `train.py` — Script to start training
-- `resume.py` — Script to resume training from last checkpoint
-- `setup.py` — Script to install all dependencies
 
 ## Installation
 
