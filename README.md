@@ -42,7 +42,24 @@ py -3.10 -m pip install torch torchvision torchaudio --index-url https://downloa
 py -3.10 -m pip install mlagents==1.1.0
    ```
 
+For CPU only:
 
+```bash
+py -3.10 -m pip install torch torchvision torchaudio
+py -3.10 -m pip install mlagents==1.1.0
+   ```
 
+Or run setup.py:
+
+```bash
+py -3.10 setup.py
+   ```
+
+Step 3 — Verify installation
+
+```bash
+py -3.10 -c "import torch; print(torch.cuda.is_available())"
+py -3.10 -c "import mlagents; print('ML-Agents ready!')"
+   ```
 
 
