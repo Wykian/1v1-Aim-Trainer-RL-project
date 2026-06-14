@@ -75,7 +75,7 @@ Open scene: Assets/Dodgeball/Scenes/Elimination_Training
 Step 2 — Start training
 
 ```bash
-py -3.10 -c "from mlagents.trainers.learn import main; main()" "D:\config\[files_name].yaml" --run-id [ID_Name]
+py -3.10 -c "from mlagents.trainers.learn import main; main()" "D:\config\dodgeball_1v1.yaml" --run-id dodgeball_1v1_v1
    ```
 
 Step 3 — Press Play in Unity
