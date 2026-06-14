@@ -26,6 +26,7 @@ Requirements :
 - Python 3.10
 - Unity 6 (6000.3.11f1)
 - NVIDIA GPU with CUDA 12.4 (recommended)
+- Visual Studio 2022 (recommended it much easier)
 
 ## Set up
 Step 1 — Install Python 3.10
@@ -62,4 +63,34 @@ py -3.10 -c "import torch; print(torch.cuda.is_available())"
 py -3.10 -c "import mlagents; print('ML-Agents ready!')"
    ```
 
+## How to Train
 
+Step 1 — Open Unity
+
+Open Unity Hub → Add project → point to the project folder
+Open scene: Assets/Dodgeball/Scenes/Elimination_Training
+
+Step 2 — Start training
+
+```bash
+py -3.10 -c "from mlagents.trainers.learn import main; main()" "D:\config\[files_name].yaml" --run-id [ID_Name]
+   ```
+
+Step 3 — Press Play in Unity
+Wait for terminal to show:
+
+[INFO] Listening on port 5004
+
+Step 4 - Monitor through the terminal in the Visual Studio 2022
+it will update in terminal that should show something like this
+
+results/[ID_Name]/DodgeBall-<step>.onnx
+
+Step 5 — Resume training
+
+```bash
+py -3.10 -c "from mlagents.trainers.learn import main; main()" "D:\config\[files_name].yaml" --run-id [ID_Name] --resume
+   ```
+## 🙏 Credits
+- Original DodgeBall environment by [Unity Technologies](https://github.com/Unity-Technologies/ml-agents-dodgeball-env) — Apache 2.0 License
+- ML-Agents framework by [Unity Technologies](https://github.com/Unity-Technologies/ml-agents) — Apache 2.0 License
