@@ -1,6 +1,9 @@
 # 1v1-Aim-Trainer-RL-project
 1v1 Aim Trainer RL project is a 1v1 training sandbox where you fight against an AI opponent that actually learns — powered by Unity ML-Agents and Reinforcement Learning.
 
+# Noted
+the files that I attached in this project is just files that I modify, so not to confused you need to originated git clone Dodge Ball Unity Official and then modify in later in the Unity Editor
+
 # Project Overview
 Conventional aim trainers (Aim Lab, KovaaK's) use scripted bots that move in predetermined patterns. Players memorize those patterns rather than developing transferable aim skills.
 
