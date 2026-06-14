@@ -4,7 +4,8 @@
 You can read the full procress here : https://medium.com/@sualpoven2/i-built-an-ai-dodgeball-opponent-that-learns-to-beat-you-using-reinforcement-learning-in-unity-921951fdc923
 
 # Noted
-the files that I attached in this project is just files that I modify, so not to confused you need to originated git clone Dodge Ball Unity Official and then modify in later in the Unity Editor
+1. The files that I attached in this project is just files that I modify, so not to confused you need to originated git clone Dodge Ball Unity Official and then modify in later in the Unity Editor
+2. The name of the run ID and yaml files name could be change so it up to you
 
 # Project Overview
 Conventional aim trainers (Aim Lab, KovaaK's) use scripted bots that move in predetermined patterns. Players memorize those patterns rather than developing transferable aim skills.
