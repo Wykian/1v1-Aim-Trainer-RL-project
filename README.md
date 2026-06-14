@@ -1,6 +1,8 @@
 # 1v1-Aim-Trainer-RL-project
 1v1 Aim Trainer RL project is a 1v1 training sandbox where you fight against an AI opponent that actually learns — powered by Unity ML-Agents and Reinforcement Learning.
 
+You can read the full procress here : https://medium.com/@sualpoven2/i-built-an-ai-dodgeball-opponent-that-learns-to-beat-you-using-reinforcement-learning-in-unity-921951fdc923
+
 # Noted
 the files that I attached in this project is just files that I modify, so not to confused you need to originated git clone Dodge Ball Unity Official and then modify in later in the Unity Editor
 
