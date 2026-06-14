@@ -80,12 +80,12 @@ Wait for terminal to show:
 Step 4 - Monitor through the terminal in the Visual Studio 2022
 it will update in terminal that should show something like this
 
-results/[ID_Name]/DodgeBall-<step>.onnx
+results/dodgeball_1v1_v1/DodgeBall-<step>.onnx
 
 Step 5 — Resume training
 
 ```bash
-py -3.10 -c "from mlagents.trainers.learn import main; main()" "D:\config\[files_name].yaml" --run-id [ID_Name] --resume
+py -3.10 -c "from mlagents.trainers.learn import main; main()" "D:\config\dodgeball_1v1.yaml" --run-id dodgeball_1v1_v1 --resume
    ```
 ## 🙏 Credits
 - Original DodgeBall environment by [Unity Technologies](https://github.com/Unity-Technologies/ml-agents-dodgeball-env) — Apache 2.0 License
