@@ -23,7 +23,7 @@ This project replaces scripted bots with an RL agent trained through self-play �
 The Stage 3 ELO drop is proof the system is working — the AI deliberately loses rounds against simulated novice opponents to learn restraint.
 
 ## Environment Modifications (4v4 → 1v1)
-|markdown| Change | Original | Modified |
+| Change | Original | Modified |
 |---|---|---|
 | Agents per team | 4 | 1 |
 | Balls in arena | 10 | 4 |
