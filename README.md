@@ -32,7 +32,7 @@ The Stage 3 ELO drop is proof the system is working — the AI deliberately lose
 
 ## Files and Folders
 
-- `config/[files_name].yaml` — POCA training configuration
+- `config/dodgeball_1v1.yaml` — POCA training configuration
 - `results/` — Exported ONNX model checkpoints
 - `requirements.txt` - List of ML Agent dependencies.
 - `Scripts/DodgeBallGameController.cs` — Modified game controller (4v4 → 1v1)
