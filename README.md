@@ -2,6 +2,7 @@
 1v1 Aim Trainer RL project is a 1v1 training sandbox where you fight against an AI opponent that actually learns — powered by Unity ML-Agents and Reinforcement Learning.
 
 You can read the full procress here : https://medium.com/@sualpoven2/i-built-an-ai-dodgeball-opponent-that-learns-to-beat-you-using-reinforcement-learning-in-unity-921951fdc923
+You can test the game out here : https://sualp-oven.itch.io/1v1-aim-trainer-rl-project
 
 # Noted
 1. The files that I attached in this project is just files that I modify, so not to confused you need to originated git clone Dodge Ball Unity Official and then modify in later in the Unity Editor
@@ -11,6 +12,13 @@ You can read the full procress here : https://medium.com/@sualpoven2/i-built-an-
 Conventional aim trainers (Aim Lab, KovaaK's) use scripted bots that move in predetermined patterns. Players memorize those patterns rather than developing transferable aim skills.
 
 This project replaces scripted bots with an RL agent trained through self-play — an opponent that develops genuine strategies by competing against itself. The result is an adaptive training partner whose difficulty scales naturally with training time.
+
+## The Three-Stage Training Pipeline
+| Stage | Steps | Peak ELO | Behavior |
+|---|---|---|---|
+| Stage 1 | 2M | ~1,350 | Basic throwing |
+| Stage 2 | 25M | ~1,600 | Integrated aim + dodge |
+| Stage 3 | 35M | ~1,200 | Adaptive |
 
 
 ## Files and Folders
