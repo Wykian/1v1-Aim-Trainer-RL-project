@@ -20,6 +20,15 @@ This project replaces scripted bots with an RL agent trained through self-play �
 | Stage 2 | 25M | ~1,600 | Integrated aim + dodge |
 | Stage 3 | 35M | ~1,200 | Adaptive |
 
+The Stage 3 ELO drop is proof the system is working — the AI deliberately loses rounds against simulated novice opponents to learn restraint.
+
+## Environment Modifications (4v4 → 1v1)
+|markdown| Change | Original | Modified |
+|---|---|---|
+| Agents per team | 4 | 1 |
+| Balls in arena | 10 | 4 |
+| Arena scale | 1.0x | 0.6x |
+| Max episode steps | 5,000 | 5,000 |
 
 ## Files and Folders
 
