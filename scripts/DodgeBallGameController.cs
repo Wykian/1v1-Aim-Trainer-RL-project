@@ -8,8 +8,6 @@ using TMPro;
 
 public class DodgeBallGameController : MonoBehaviour
 {
-    //Are we training this platform or is this game/movie mode
-    //This determines if win screens and various effects will trigger
     public enum SceneType
     {
         Game,
@@ -26,8 +24,6 @@ public class DodgeBallGameController : MonoBehaviour
         }
     }
 
-    //Is this an Elimination game or CTF
-    //This determines the game logic that will be used
     public enum GameModeType
     {
         Elimination,
@@ -35,8 +31,6 @@ public class DodgeBallGameController : MonoBehaviour
     }
     public GameModeType GameMode = GameModeType.Elimination;
 
-    //The GameObject of the human player
-    //This will be used to determine proper "game over" state
     [Header("HUMAN PLAYER")] public GameObject PlayerGameObject;
 
     [Header("BALLS")] public GameObject BallPrefab;
@@ -81,10 +75,20 @@ public class DodgeBallGameController : MonoBehaviour
     public GameObject PurpleTeamWonUI;
     public TMP_Text CountDownText;
 
-    private int m_NumberOfBluePlayersRemaining = 1; //current number of blue players remaining in elimination mode
-    private int m_NumberOfPurplePlayersRemaining = 1; //current number of purple players remaining in elimination mode
+    private int m_NumberOfBluePlayersRemaining = 1;
+    private int m_NumberOfPurplePlayersRemaining = 1;
     private SimpleMultiAgentGroup m_Team0AgentGroup;
     private SimpleMultiAgentGroup m_Team1AgentGroup;
+
+    // ============================================================
+    // SKILL ADAPTATION
+    // ============================================================
+    [Header("SKILL ADAPTATION")]
+    public PlayerMetricsTracker purpleAgentTracker;
+
+    [Header("HUMAN PLAYER METRICS")]
+    public PlayerMetricsTracker humanPlayerMetrics;
+    // ============================================================
 
     [Serializable]
     public class PlayerInfo
@@ -141,7 +145,6 @@ public class DodgeBallGameController : MonoBehaviour
         m_Team1AgentGroup = new SimpleMultiAgentGroup();
         InstantiateBalls();
 
-        //INITIALIZE AGENTS
         foreach (var item in Team0Players)
         {
             item.Agent.Initialize();
@@ -164,7 +167,6 @@ public class DodgeBallGameController : MonoBehaviour
         SetActiveLosers(blueLosersList, 0);
         SetActiveLosers(purpleLosersList, 0);
 
-        //Poof Particles
         if (usePoofParticlesOnElimination)
         {
             foreach (var item in poofParticlesList)
@@ -176,10 +178,8 @@ public class DodgeBallGameController : MonoBehaviour
         ResetScene();
     }
 
-    //Instantiate balls and add them to the pool
     void InstantiateBalls()
     {
-        //SPAWN DODGE BALLS
         foreach (var ballPos in BallSpawnPositions)
         {
             for (int i = 0; i < NumberOfBallsToSpawn; i++)
@@ -198,8 +198,7 @@ public class DodgeBallGameController : MonoBehaviour
     void FixedUpdate()
     {
         if (!m_Initialized) return;
-        
-        //RESET SCENE IF WE MaxEnvironmentSteps
+
         m_ResetTimer += 1;
         if (m_ResetTimer >= MaxEnvironmentSteps)
         {
@@ -209,7 +208,6 @@ public class DodgeBallGameController : MonoBehaviour
         }
     }
 
-    //Show a countdown UI when the round starts
     IEnumerator GameCountdown()
     {
         Time.timeScale = 0;
@@ -231,9 +229,6 @@ public class DodgeBallGameController : MonoBehaviour
         CountDownText.gameObject.SetActive(false);
     }
 
-
-    // Get the game mode. Use the set one in the dropdown, unles overwritten by
-    // environment parameters.
     private GameModeType getCurrentGameMode()
     {
         float isCTFparam = m_EnvParameters.GetWithDefault("is_capture_the_flag", (float)GameMode);
@@ -241,8 +236,6 @@ public class DodgeBallGameController : MonoBehaviour
         return newGameMode;
     }
 
-
-    //Display the correct number of agents on the loser podium
     void SetActiveLosers(List<GameObject> list, int numOfLosers)
     {
         for (int i = 0; i < list.Count; i++)
@@ -251,10 +244,8 @@ public class DodgeBallGameController : MonoBehaviour
         }
     }
 
-    // Add one loser to the podium
     void IncrementActiveLosers(List<GameObject> list)
     {
-        // Count how many active losers there are
         int numLosers = 0;
         foreach (var loser in list)
         {
@@ -266,7 +257,6 @@ public class DodgeBallGameController : MonoBehaviour
         SetActiveLosers(list, Math.Min(numLosers + 1, 3));
     }
 
-    // Drop flag if agent is holding enemy flag.
     private void dropFlagIfHas(DodgeBallAgent hit, DodgeBallAgent thrower)
     {
         if (hit.HasEnemyFlag)
@@ -287,10 +277,9 @@ public class DodgeBallGameController : MonoBehaviour
         }
     }
 
-    //Call this method when an agent returns an enemy flag to its base.
     public void ReturnFlag(DodgeBallAgent agent)
     {
-        if (!m_FlagsAtBase[agent.teamID]) // If the flag isn't already at the base
+        if (!m_FlagsAtBase[agent.teamID])
         {
             if (agent.teamID == 1)
             {
@@ -305,7 +294,6 @@ public class DodgeBallGameController : MonoBehaviour
         }
     }
 
-    //Play a poof particle effect at specified position
     public void PlayParticleAtPosition(Vector3 pos)
     {
         foreach (var item in poofParticlesList)
@@ -319,8 +307,6 @@ public class DodgeBallGameController : MonoBehaviour
         }
     }
 
-    //Has this game ended? Used in Game Mode.
-    //Prevents multiple coroutine calls when showing the win screen
     private bool m_GameEnded = false;
     public void ShowWinScreen(int winningTeam, float delaySeconds)
     {
@@ -329,15 +315,36 @@ public class DodgeBallGameController : MonoBehaviour
         StartCoroutine(ShowWinScreenThenReset(winningTeam, delaySeconds));
     }
 
-    // End the game, resetting if in training mode and showing a win screen if in game mode.
     public void EndGame(int winningTeam, float delaySeconds = 1.0f)
     {
-        //GAME MODE
+        // ============================================================
+        // TRACK HUMAN WIN/LOSS - NEW
+        // ============================================================
+        if (humanPlayerMetrics != null)
+        {
+            bool humanWon = winningTeam == 0; // team 0 = human Blue
+            humanPlayerMetrics.RegisterGameResult(humanWon);
+
+            // Sync to purple agent tracker so AI can read it
+            if (purpleAgentTracker != null)
+            {
+                purpleAgentTracker.currentWinRate = humanPlayerMetrics.currentWinRate;
+                purpleAgentTracker.currentHitAccuracy = humanPlayerMetrics.currentHitAccuracy;
+            }
+
+            float skillScore = (humanPlayerMetrics.currentWinRate +
+                               humanPlayerMetrics.currentHitAccuracy) / 2f;
+            string level = skillScore < 0.33f ? "Newbie" :
+                          skillScore < 0.66f ? "Medium" : "Pro";
+
+            Debug.Log($"Human won: {humanWon} | WinRate: {humanPlayerMetrics.currentWinRate:F2} | Accuracy: {humanPlayerMetrics.currentHitAccuracy:F2} | AI sees player as: {level}");
+        }
+        // ============================================================
+
         if (ShouldPlayEffects)
         {
             ShowWinScreen(winningTeam, delaySeconds);
         }
-        //TRAINING MODE
         else
         {
             ResetScene();
@@ -357,7 +364,6 @@ public class DodgeBallGameController : MonoBehaviour
             m_audioSource.PlayOneShot(clipToUse2, .05f);
         }
 
-        // Set agents to stun, enable dance animations
         float totalTimeSpent = 0f;
         if (winningTeam == 0)
         {
@@ -397,7 +403,6 @@ public class DodgeBallGameController : MonoBehaviour
         ResetScene();
     }
 
-    //Clear UI from screen
     void ResetPlayerUI()
     {
         if (BlueTeamWonUI)
@@ -422,13 +427,10 @@ public class DodgeBallGameController : MonoBehaviour
         if (shouldPoof)
         {
             agent.gameObject.SetActive(false);
-            //Poof Particles
             if (usePoofParticlesOnElimination)
             {
                 PlayParticleAtPosition(agent.transform.position);
             }
-
-            //ADD TO LOSER PODIUM 
             if (agent.teamID == 0)
             {
                 IncrementActiveLosers(blueLosersList);
@@ -440,23 +442,39 @@ public class DodgeBallGameController : MonoBehaviour
         }
     }
 
-    //Call this method when a player is hit by a dodgeball
     public void PlayerWasHit(DodgeBallAgent hit, DodgeBallAgent thrower)
     {
-        //SET AGENT/TEAM REWARDS HERE
         int hitTeamID = hit.teamID;
         int throwTeamID = thrower.teamID;
         var HitAgentGroup = hitTeamID == 1 ? m_Team1AgentGroup : m_Team0AgentGroup;
         var ThrowAgentGroup = hitTeamID == 1 ? m_Team0AgentGroup : m_Team1AgentGroup;
         float hitBonus = GameMode == GameModeType.Elimination ? EliminationHitBonus : CTFHitBonus;
 
-        // Always drop the flag
+        // ============================================================
+        // TRACK HUMAN ACCURACY - NEW
+        // ============================================================
+        if (humanPlayerMetrics != null)
+        {
+            // Human (team 0) hit the AI (team 1)
+            if (thrower.teamID == 0 && hit.teamID == 1)
+            {
+                humanPlayerMetrics.RegisterShot(true);
+                Debug.Log($"Human landed a hit! Accuracy: {humanPlayerMetrics.currentHitAccuracy:F2}");
+            }
+            // AI (team 1) hit the human (team 0) - human missed/failed to dodge
+            else if (thrower.teamID == 1 && hit.teamID == 0)
+            {
+                humanPlayerMetrics.RegisterShot(false);
+            }
+        }
+        // ============================================================
+
         if (DropFlagImmediately)
         {
             dropFlagIfHas(hit, thrower);
         }
 
-        if (hit.HitPointsRemaining == 1) //FINAL HIT
+        if (hit.HitPointsRemaining == 1)
         {
             if (GameMode == GameModeType.CaptureTheFlag)
             {
@@ -467,7 +485,6 @@ public class DodgeBallGameController : MonoBehaviour
             {
                 m_NumberOfBluePlayersRemaining -= hitTeamID == 0 ? 1 : 0;
                 m_NumberOfPurplePlayersRemaining -= hitTeamID == 1 ? 1 : 0;
-                // The current agent was just killed and is the final agent
                 if (m_NumberOfBluePlayersRemaining == 0 || m_NumberOfPurplePlayersRemaining == 0 || hit.gameObject == PlayerGameObject)
                 {
                     ThrowAgentGroup.AddGroupReward(2.0f - m_TimeBonus * (m_ResetTimer / MaxEnvironmentSteps));
@@ -478,15 +495,12 @@ public class DodgeBallGameController : MonoBehaviour
                     hit.DropAllBalls();
                     if (ShouldPlayEffects)
                     {
-                        // Don't poof the last agent
                         StartCoroutine(TumbleThenPoof(hit, false));
                     }
                     EndGame(throwTeamID);
                 }
-                // The current agent was just killed but there are other agents
                 else
                 {
-                    // Additional effects for game mode
                     if (ShouldPlayEffects)
                     {
                         StartCoroutine(TumbleThenPoof(hit));
@@ -506,13 +520,10 @@ public class DodgeBallGameController : MonoBehaviour
         }
     }
 
-    //Call this method when an agent picks up an enemy flag.
     public void FlagWasTaken(DodgeBallAgent agent)
     {
-        // Don't do it if game just ended
         if (!m_GameEnded)
         {
-            // Team 1 took team 0's flag
             if (agent.teamID == 1)
             {
                 Team0Flag.gameObject.SetActive(false);
@@ -572,7 +583,6 @@ public class DodgeBallGameController : MonoBehaviour
             LoseAgentGroup.EndGroupEpisode();
             print($"Team {agent.teamID} Won");
             m_StatsRecorder.Add("Environment/Flag Drops Per Ep", m_NumFlagDrops);
-            // Confetti animation
             if (ShouldPlayEffects)
             {
                 var winningBase = agent.teamID == 1 ? Team1Base : Team0Base;
@@ -588,7 +598,6 @@ public class DodgeBallGameController : MonoBehaviour
 
     private void GetAllParameters()
     {
-        //Set time bonus to 1 if Elimination, 0 if CTF
         float defaultTimeBonus = GameMode == GameModeType.CaptureTheFlag ? 0.0f : 1.0f;
         m_TimeBonus = m_EnvParameters.GetWithDefault("time_bonus_scale", defaultTimeBonus);
         m_ReturnOwnFlagBonus = m_EnvParameters.GetWithDefault("return_flag_bonus", 0.0f);
@@ -596,11 +605,37 @@ public class DodgeBallGameController : MonoBehaviour
         EliminationHitBonus = m_EnvParameters.GetWithDefault("elimination_hit_reward", EliminationHitBonus);
     }
 
+    // ============================================================
+    // SKILL ADAPTATION - STAGE 3
+    // Uses continuous random values for infinite skill levels
+    // ============================================================
+    public void RandomizeOpponentSkillProfile()
+    {
+        if (purpleAgentTracker == null) return;
+
+        // Only randomize during training - not during actual gameplay
+        if (CurrentSceneType == SceneType.Training)
+        {
+            purpleAgentTracker.currentWinRate = Random.Range(0.0f, 1.0f);
+            purpleAgentTracker.currentHitAccuracy = Random.Range(0.0f, 1.0f);
+
+            float skillScore = (purpleAgentTracker.currentWinRate +
+                               purpleAgentTracker.currentHitAccuracy) / 2f;
+
+            if (skillScore < 0.33f)
+                Debug.Log($"Simulating Newbie - WinRate: {purpleAgentTracker.currentWinRate:F2}, Accuracy: {purpleAgentTracker.currentHitAccuracy:F2}");
+            else if (skillScore < 0.66f)
+                Debug.Log($"Simulating Medium - WinRate: {purpleAgentTracker.currentWinRate:F2}, Accuracy: {purpleAgentTracker.currentHitAccuracy:F2}");
+            else
+                Debug.Log($"Simulating Pro - WinRate: {purpleAgentTracker.currentWinRate:F2}, Accuracy: {purpleAgentTracker.currentHitAccuracy:F2}");
+        }
+    }
+    // ============================================================
+
     void ResetScene()
     {
         StopAllCoroutines();
 
-        //Clear win screens and start countdown
         if (ShouldPlayEffects)
         {
             ResetPlayerUI();
@@ -619,8 +654,10 @@ public class DodgeBallGameController : MonoBehaviour
 
         GetAllParameters();
 
+        // Only randomize in training mode
+        RandomizeOpponentSkillProfile();
+
         print($"Resetting {gameObject.name}");
-        //Reset Balls by deleting them and reinitializing them
         int ballSpawnNum = 0;
         int ballSpawnedInPosition = 0;
         for (int ballNum = 0; ballNum < AllBallsList.Count; ballNum++)
@@ -642,7 +679,6 @@ public class DodgeBallGameController : MonoBehaviour
             }
         }
 
-        //Reset the agents
         foreach (var item in Team0Players)
         {
             item.Agent.HitPointsRemaining = PlayerMaxHitPoints;
@@ -673,7 +709,6 @@ public class DodgeBallGameController : MonoBehaviour
         SetActiveLosers(purpleLosersList, 0);
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (!m_Initialized)
