@@ -2,6 +2,7 @@
 1v1 Aim Trainer RL project is a 1v1 training sandbox where you fight against an AI opponent that actually learns — powered by Unity ML-Agents and Reinforcement Learning.
 
 You can read the full procress here : https://medium.com/@sualpoven2/i-built-an-ai-dodgeball-opponent-that-learns-to-beat-you-using-reinforcement-learning-in-unity-921951fdc923
+
 You can test the game out here : https://sualp-oven.itch.io/1v1-aim-trainer-rl-project
 
 # Noted
